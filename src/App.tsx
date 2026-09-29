@@ -124,9 +124,6 @@ function App() {
       />
 
       <main>
-        <div className={isSupabaseConfigured ? 'backend-status online' : 'backend-status demo'}>
-          <span />{isSupabaseConfigured ? 'Supabase подключён' : 'Демо-режим · добавьте .env для Supabase'}
-        </div>
         {backendError && <div className="backend-error"><span>{backendError}</span><button onClick={() => setBackendError(null)}><X size={15} /></button></div>}
         <section className="hero wrap">
           <div className="hero-copy">
