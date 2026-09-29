@@ -157,7 +157,7 @@ a { color: inherit; text-decoration: none; }
 .steps h3 { font: 600 16px 'Unbounded'; margin: 26px 0 12px; }
 .steps p { font-size: 12px; line-height: 1.65; color: #76807b; margin: 0; }
 
-.cta-wrap { min-height: 315px; background: #ff765d; display: flex; align-items: center; justify-content: space-between; padding: 56px 78px; margin-bottom: 100px; position: relative; overflow: hidden; }
+.cta-wrap { width: 100%; max-width: none; min-height: 315px; background: #ff765d; display: flex; align-items: center; justify-content: space-between; padding: 56px max(28px, calc((100vw - 1024px) / 2)); margin: 0; position: relative; overflow: hidden; }
 .cta-wrap::before { content: ''; position: absolute; width: 330px; height: 330px; border: 1px solid rgba(23,34,30,.13); border-radius: 50%; right: 110px; top: -240px; box-shadow: 0 0 0 50px rgba(23,34,30,.04), 0 0 0 100px rgba(23,34,30,.025); }
 .cta-copy span { font-size: 9px; font-weight: 800; letter-spacing: 1.5px; }
 .cta-copy h2 { font: 600 clamp(27px, 3.5vw, 43px)/1.13 'Unbounded'; letter-spacing: -2px; margin: 14px 0; }
