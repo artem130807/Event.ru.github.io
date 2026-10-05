@@ -30,6 +30,6 @@ dotnet run --project src/EventRep.Api/EventRep.Api.csproj
 docker compose up --build -d
 ```
 
-Сайт доступен на `http://localhost:18080/`, проверка API — `http://localhost:18081/api/health`. Порты можно изменить через переменные `FRONTEND_PORT` и `BACKEND_PORT`. Приложения пока независимы: frontend не отправляет запросы к API.
+Сайт доступен на `http://localhost/`, проверка API — `http://localhost/api/health`, Swagger UI — `http://localhost/swagger/`. Backend также опубликован на `http://localhost:8080`; порты можно изменить через переменные `FRONTEND_PORT` и `BACKEND_PORT`. Само React-приложение пока не отправляет запросы к API.
 
 GitHub Pages по-прежнему публикует только `frontend/dist` через [workflow](.github/workflows/deploy-pages.yml).

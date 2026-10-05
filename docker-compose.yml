@@ -6,7 +6,7 @@ services:
     image: eventrep-backend:local
     restart: unless-stopped
     ports:
-      - "${BACKEND_PORT:-18081}:8080"
+      - "${BACKEND_PORT:-8080}:8080"
 
   frontend:
     build:
@@ -16,5 +16,7 @@ services:
     restart: unless-stopped
     depends_on:
       - backend
+    extra_hosts:
+      - "host.containers.internal:host-gateway"
     ports:
-      - "${FRONTEND_PORT:-18080}:80"
+      - "${FRONTEND_PORT:-80}:80"
