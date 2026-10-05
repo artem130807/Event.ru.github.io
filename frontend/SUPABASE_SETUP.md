@@ -7,7 +7,7 @@
 ## 2. Создайте таблицы и политики
 
 Откройте **SQL Editor**, вставьте содержимое файла
-`supabase/migrations/202609290001_initial_schema.sql` и нажмите **Run**.
+`frontend/supabase/migrations/202609290001_initial_schema.sql` и нажмите **Run**.
 
 Миграция создаёт:
 
@@ -39,9 +39,9 @@ VITE_SUPABASE_PUBLISHABLE_KEY=YOUR_PUBLISHABLE_KEY
 ## 5. Запустите приложение
 
 ```bash
+cd frontend
 npm install
 npm run dev
 ```
 
-Без `.env` интерфейс продолжает работать в демонстрационном режиме. При корректной
-настройке над первым экраном появится индикатор «Supabase подключён».
+Без `.env` интерфейс продолжает работать в демонстрационном режиме.

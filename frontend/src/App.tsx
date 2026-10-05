@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   ArrowRight,
   Bell,
@@ -21,8 +21,6 @@ import {
   X,
 } from 'lucide-react'
 import { categories, events as demoEvents } from './data'
-import { eventsApi, favoritesApi, responsesApi } from './lib/api'
-import { isSupabaseConfigured } from './lib/supabase'
 import type { Category, EventDraft, EventItem, ResponseDraft } from './types'
 
 type Modal = 'create' | 'details' | 'respond' | 'success' | null
@@ -31,8 +29,6 @@ const formatPrice = (value: number) => new Intl.NumberFormat('ru-RU').format(val
 
 function App() {
   const [events, setEvents] = useState<EventItem[]>(demoEvents)
-  const [loading, setLoading] = useState(isSupabaseConfigured)
-  const [backendError, setBackendError] = useState<string | null>(null)
   const [activeCategory, setActiveCategory] = useState<(typeof categories)[number]>('Все события')
   const [query, setQuery] = useState('')
   const [city, setCity] = useState('Все города')
@@ -42,31 +38,6 @@ function App() {
   const [modal, setModal] = useState<Modal>(null)
   const [menuOpen, setMenuOpen] = useState(false)
   const [submitted, setSubmitted] = useState<number[]>([])
-
-  useEffect(() => {
-    let active = true
-    async function loadData() {
-      try {
-        const nextEvents = await eventsApi.list()
-        if (!active) return
-        setEvents(nextEvents)
-        if (nextEvents[0]) setSelected(nextEvents[0])
-        try {
-          const nextFavorites = await favoritesApi.list()
-          if (active) setSaved(nextFavorites)
-        } catch (error) {
-          if (active) setBackendError(error instanceof Error ? error.message : 'Авторизация Supabase недоступна')
-        }
-      } catch (error) {
-        if (!active) return
-        setBackendError(error instanceof Error ? error.message : 'Не удалось загрузить данные')
-      } finally {
-        if (active) setLoading(false)
-      }
-    }
-    loadData()
-    return () => { active = false }
-  }, [])
 
   const filtered = useMemo(() => {
     return events.filter((event) => {
@@ -88,28 +59,27 @@ function App() {
     setModal('respond')
   }
 
-  const submitResponse = async (draft: ResponseDraft) => {
-    await responsesApi.create(draft)
+  const submitResponse = async (_draft: ResponseDraft) => {
     setSubmitted((current) => [...new Set([...current, selected.id])])
     setEvents((current) => current.map((event) => event.id === selected.id ? { ...event, responses: event.responses + 1 } : event))
     setModal('success')
   }
 
-  const toggleSaved = async (eventId: number) => {
+  const toggleSaved = (eventId: number) => {
     const wasSaved = saved.includes(eventId)
     setSaved((current) => wasSaved ? current.filter((id) => id !== eventId) : [...current, eventId])
-    if (!isSupabaseConfigured) return
-    try {
-      if (wasSaved) await favoritesApi.remove(eventId)
-      else await favoritesApi.add(eventId)
-    } catch (error) {
-      setSaved((current) => wasSaved ? [...current, eventId] : current.filter((id) => id !== eventId))
-      setBackendError(error instanceof Error ? error.message : 'Не удалось изменить избранное')
-    }
   }
 
   const createEvent = async (draft: EventDraft) => {
-    const created = await eventsApi.create(draft)
+    const date = new Date(`${draft.eventDate}T12:00:00`)
+    const monthNames = ['ЯНВ', 'ФЕВ', 'МАР', 'АПР', 'МАЙ', 'ИЮН', 'ИЮЛ', 'АВГ', 'СЕН', 'ОКТ', 'НОЯ', 'ДЕК']
+    const created: EventItem = {
+      id: Date.now(), title: draft.title, category: draft.category, role: draft.role,
+      description: draft.description, date: new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }).format(date),
+      day: String(date.getDate()).padStart(2, '0'), month: monthNames[date.getMonth()], city: draft.city,
+      place: draft.place, price: draft.price, tags: draft.tags, author: 'Евгений Соколов', avatar: 'ЕС',
+      responses: 0, color: '#ff785a', status: 'open', createdAt: new Date().toISOString(),
+    }
     setEvents((current) => [created, ...current])
   }
 
@@ -124,7 +94,6 @@ function App() {
       />
 
       <main>
-        {backendError && <div className="backend-error"><span>{backendError}</span><button onClick={() => setBackendError(null)}><X size={15} /></button></div>}
         <section className="hero wrap">
           <div className="hero-copy">
             <div className="eyebrow"><span /> 312 новых задач за неделю</div>
@@ -204,7 +173,7 @@ function App() {
 
             <div className="results-line"><b>{filtered.length}</b> событий найдено <span /> Обновлено только что</div>
 
-            {loading ? <div className="loading-state"><span /><p>Загружаем события из Supabase…</p></div> : filtered.length ? (
+            {filtered.length ? (
               <div className="event-grid">
                 {filtered.map((event, index) => (
                   <EventCard
