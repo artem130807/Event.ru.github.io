@@ -2,6 +2,7 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 
 WORKDIR /src
 COPY EventRep.sln ./
+COPY Directory.Packages.props ./
 COPY src/EventRep.Domain/EventRep.Domain.csproj src/EventRep.Domain/
 COPY src/EventRep.Application/EventRep.Application.csproj src/EventRep.Application/
 COPY src/EventRep.Infrastructure/EventRep.Infrastructure.csproj src/EventRep.Infrastructure/
