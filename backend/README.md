@@ -23,6 +23,16 @@
 
 Строка подключения задаётся ключом `ConnectionStrings__DefaultConnection`.
 
+В проекте `EventRep.Application` подключён global using для FluentResults, поэтому
+результаты можно объявлять без дополнительного импорта:
+
+```csharp
+Result<string> result = Result.Ok("Готово");
+```
+
+Слой `EventRep.Domain` намеренно не зависит от NuGet-пакетов. Если тип нужен в
+другом слое, добавьте `using FluentResults;` и прямую ссылку на пакет в проект.
+
 ## Запуск
 
 ```bash
