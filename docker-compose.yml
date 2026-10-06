@@ -8,6 +8,9 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      eventrep_internal:
+        ipv4_address: 10.91.0.10
     ports:
       - "127.0.0.1:${POSTGRES_PORT:-15432}:5432"
     healthcheck:
@@ -25,15 +28,14 @@ services:
     restart: unless-stopped
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=${POSTGRES_DB:-eventrep};Username=${POSTGRES_USER:-eventrep};Password=${POSTGRES_PASSWORD};Include Error Detail=false
+      # A fixed private address avoids a conflict between Podman's DNS server
+      # and system BIND installations that listen on every bridge interface.
+      ConnectionStrings__DefaultConnection: Host=10.91.0.10;Port=5432;Database=${POSTGRES_DB:-eventrep};Username=${POSTGRES_USER:-eventrep};Password=${POSTGRES_PASSWORD};Include Error Detail=false
     depends_on:
       postgres:
         condition: service_healthy
-    # Podman Compose also writes this alias to /etc/hosts. This keeps service
-    # discovery working on VPS hosts where a system DNS server occupies the
-    # bridge gateway's port 53 and prevents aardvark-dns from binding it.
-    links:
-      - postgres:postgres
+    networks:
+      - eventrep_internal
     ports:
       - "127.0.0.1:${BACKEND_PORT:-8080}:8080"
 
@@ -45,8 +47,16 @@ services:
     restart: unless-stopped
     depends_on:
       - backend
+    networks:
+      - eventrep_internal
     ports:
       - "127.0.0.1:${FRONTEND_PORT:-18080}:80"
 
 volumes:
   postgres_data:
+
+networks:
+  eventrep_internal:
+    ipam:
+      config:
+        - subnet: 10.91.0.0/24
