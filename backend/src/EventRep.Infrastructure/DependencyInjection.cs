@@ -1,3 +1,4 @@
+using EventRep.Application.Contracts.Persistence;
 using EventRep.Domain.Contracts;
 using EventRep.Infrastructure.Persistence;
 using EventRep.Infrastructure.Persistence.Repositories;
@@ -28,6 +29,7 @@ public static class DependencyInjection
         services.AddScoped<IPortfolioRepository, PortfolioRepository>();
         services.AddScoped<IPortfolioElementRepository, PortfolioElementRepository>();
         services.AddScoped<IResumeRepository, ResumeRepository>();
+        services.AddScoped<IEventReadRepository, EventReadRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         return services;

@@ -61,4 +61,18 @@ public class EventEntity
     public void UpdateTimeStart(TimeSpan timeStart) => TimeStart = timeStart;
     public void UpdateTimeEnd(TimeSpan timeEnd) => TimeEnd = timeEnd;
     public void ToRefuseExecutor() => ExecutorId = null;
+
+    public Result AssignExecutor(Guid executorId)
+    {
+        if (executorId == Guid.Empty)
+            return Result.Fail("Идентификатор исполнителя обязателен.");
+
+        if (Status != EventStatus.Pending)
+            return Result.Fail("Исполнителя можно назначить только ожидающему событию.");
+
+        ExecutorId = executorId;
+        Status = EventStatus.Appointed;
+
+        return Result.Ok();
+    }
 }

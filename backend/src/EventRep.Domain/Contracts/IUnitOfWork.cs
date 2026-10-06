@@ -2,6 +2,8 @@ namespace EventRep.Domain.Contracts;
 
 public interface IUnitOfWork : IAsyncDisposable
 {
+    bool HasActiveTransaction { get; }
+
     IUserRepository Users { get; }
 
     IEventRepository Events { get; }

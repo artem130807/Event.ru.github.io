@@ -14,6 +14,8 @@ internal sealed class UnitOfWork(
 {
     private IDbContextTransaction? _currentTransaction;
 
+    public bool HasActiveTransaction => _currentTransaction is not null;
+
     public IUserRepository Users { get; } = users;
 
     public IEventRepository Events { get; } = events;

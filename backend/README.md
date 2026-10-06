@@ -58,3 +58,22 @@ dotnet tool run dotnet-ef migrations add InitialCreate \
 Фабрика получает строку подключения из аргумента `--connection`, переменной
 окружения `ConnectionStrings__DefaultConnection` или файла
 `src/EventRep.Api/appsettings.json` — в указанном порядке.
+
+## CQRS
+
+Слой Application разделён на команды и запросы через `IMediator`:
+
+- каждая команда и каждый запрос — отдельный record, реализующий
+  `IRequest<Result<T>>`;
+- каждый обработчик напрямую реализует
+  `IRequestHandler<TRequest, Result<T>>`;
+- команды изменяют агрегаты через доменные репозитории и `IUnitOfWork`;
+- запросы используют отдельные read-репозитории, возвращающие DTO без загрузки
+  доменных сущностей;
+- `ValidationBehavior` запускает FluentValidation до обработчика;
+- `UnitOfWorkBehavior` вызывает один `SaveChangesAsync` для обычной команды и
+  управляет явной транзакцией для транзакционной команды;
+- запросы выполняются без транзакции и без change tracking.
+
+Реализованный срез `Events` содержит создание события, отклик исполнителя,
+назначение исполнителя, получение события и пагинированный список с фильтрами.
