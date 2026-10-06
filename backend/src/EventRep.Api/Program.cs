@@ -1,5 +1,7 @@
 using EventRep.Application;
 using EventRep.Infrastructure;
+using EventRep.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,14 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.MapControllers();
+
+await using (var scope = app.Services.CreateAsyncScope())
+{
+    var dbContext = scope.ServiceProvider
+        .GetRequiredService<EventRepDbContext>();
+
+    await dbContext.Database.MigrateAsync();
+}
 
 app.Run();
 

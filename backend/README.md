@@ -43,3 +43,18 @@ dotnet run --project src/EventRep.Api/EventRep.Api.csproj
 ```
 
 При запуске с профилем `http` API доступен по `http://localhost:5078/api/health`, Swagger UI — по `http://localhost:5078/swagger/`.
+
+## Миграции EF Core
+
+`EventRepDbContextFactory` позволяет выполнять команды EF Core напрямую через
+проект Infrastructure, без запуска API:
+
+```bash
+dotnet tool run dotnet-ef migrations add InitialCreate \
+  --project src/EventRep.Infrastructure/EventRep.Infrastructure.csproj \
+  --startup-project src/EventRep.Infrastructure/EventRep.Infrastructure.csproj
+```
+
+Фабрика получает строку подключения из аргумента `--connection`, переменной
+окружения `ConnectionStrings__DefaultConnection` или файла
+`src/EventRep.Api/appsettings.json` — в указанном порядке.

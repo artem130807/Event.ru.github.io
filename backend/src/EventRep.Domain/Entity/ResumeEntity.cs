@@ -12,11 +12,36 @@ public class ResumeEntity
     public Guid UserId {get; private set;}
     public DateTime CreatedAt {get; private set;}
     public DateTime UpdatedAt {get; private set;}
-    private ResumeEntity(){}
+    private ResumeEntity()
+    {
+        Name = null!;
+        Description = null!;
+    }
+
+    internal static ResumeEntity Rehydrate(
+        Guid id,
+        string name,
+        string description,
+        Guid? portfolioEntityId,
+        Guid userId,
+        DateTime createdAt,
+        DateTime updatedAt) =>
+        new()
+        {
+            Id = id,
+            Name = name,
+            Description = description,
+            PortfolioEntityId = portfolioEntityId,
+            UserId = userId,
+            CreatedAt = createdAt,
+            UpdatedAt = updatedAt
+        };
+
     public static Result<ResumeEntity> Create(string name, string description , Guid userId)
     {
         var resumeEntity = new ResumeEntity
         {
+            Id = Guid.NewGuid(),
             Name = name,
             Description = description,
             PortfolioEntityId = null,

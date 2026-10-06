@@ -1,0 +1,27 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-vps-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Configure SSH
+        env:
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/eventrep_deploy
+          chmod 600 ~/.ssh/eventrep_deploy
+          ssh-keyscan -H 185.246.65.59 >> ~/.ssh/known_hosts
+
+      - name: Deploy current main branch
+        run: ssh -i ~/.ssh/eventrep_deploy eventrep@185.246.65.59

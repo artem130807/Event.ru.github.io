@@ -10,10 +10,38 @@ public class EventEntity
     public EventStatus Status {get; private set;}
     public TimeSpan TimeStart {get; private set;}
     public TimeSpan TimeEnd {get; private set;}
+    public DateTime FullDate {get; private set;}
     public DateTime CreatedAt {get; private set;}
     
-    private EventEntity(){}
-    public static Result<EventEntity> Create(string name, Guid? executorId, Guid customerId,TimeSpan timeStart, TimeSpan timeEnd)
+    private EventEntity()
+    {
+        Name = null!;
+    }
+
+    internal static EventEntity Rehydrate(
+        Guid id,
+        string name,
+        Guid? executorId,
+        Guid customerId,
+        EventStatus status,
+        TimeSpan timeStart,
+        TimeSpan timeEnd,
+        DateTime fullDate,
+        DateTime createdAt) =>
+        new()
+        {
+            Id = id,
+            Name = name,
+            ExecutorId = executorId,
+            CustomerId = customerId,
+            Status = status,
+            TimeStart = timeStart,
+            TimeEnd = timeEnd,
+            FullDate = fullDate,
+            CreatedAt = createdAt
+        };
+
+    public static Result<EventEntity> Create(string name, Guid? executorId, Guid customerId, TimeSpan timeStart, TimeSpan timeEnd, DateTime fullDate)
     {
         var eventEntity = new EventEntity
         {
@@ -21,12 +49,15 @@ public class EventEntity
             Name = name,
             ExecutorId = executorId,
             CustomerId = customerId,
+            Status = EventStatus.Pending,
             TimeStart = timeStart,
             TimeEnd = timeEnd,
-            CreatedAt = DateTime.UtcNow  
+            CreatedAt = DateTime.UtcNow,
+            FullDate = fullDate
         };
         return eventEntity;
     }
+    public void UpdateDate(DateTime fullDate) => FullDate = fullDate;
     public void UpdateTimeStart(TimeSpan timeStart) => TimeStart = timeStart;
     public void UpdateTimeEnd(TimeSpan timeEnd) => TimeEnd = timeEnd;
     public void ToRefuseExecutor() => ExecutorId = null;

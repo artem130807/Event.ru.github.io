@@ -13,6 +13,33 @@ public class PortfolioElementEntity
     public string S3File {get; private set;}
     public DateTime CreatedAt {get; private set;}
 
+    private PortfolioElementEntity()
+    {
+        Name = null!;
+        Description = null!;
+        S3Key = null!;
+        S3File = null!;
+    }
+
+    internal static PortfolioElementEntity Rehydrate(
+        Guid id,
+        Guid portfolioId,
+        string name,
+        string description,
+        string s3Key,
+        string s3File,
+        DateTime createdAt) =>
+        new()
+        {
+            Id = id,
+            PortfolioId = portfolioId,
+            Name = name,
+            Description = description,
+            S3Key = s3Key,
+            S3File = s3File,
+            CreatedAt = createdAt
+        };
+
     public static Result<PortfolioElementEntity> Create(Guid portfolioId, string name, string description, string s3Key, string s3File)
     {
         var portfolioElement = new PortfolioElementEntity
